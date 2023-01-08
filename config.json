@@ -1,0 +1,20 @@
+{
+    "dbConfig": {
+        "host": "root",
+        "password": "001230",
+        "db": "happyShopTogether",
+        "port": 3306
+    },
+    "ginConfig": {
+        "port": 8000,
+        "tokenExpires": 24
+    },
+    "secretKey": {
+        "public": "public",
+        "private": "private"
+    },
+    "global": {
+        "groupMemberCount": 3,
+        "groupForMemberTime": 24
+    }
+}

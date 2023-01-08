@@ -1,0 +1,138 @@
+package dbop
+
+import (
+    "HappyShopTogether/model"
+    "HappyShopTogether/utils/code"
+    "gorm.io/gorm"
+    "strconv"
+)
+
+// $fnCreate InsertError
+func $fnCreate(tx *gorm.DB, $smn *model.$mt) (*model.$mt, *code.MsgCode, error) {
+
+	/*
+
+	   数据校验
+
+	*/
+
+	// 重复校验
+	_, msgCode, err := $fnCheck(&model.$mt{})
+
+	if msgCode.Code == code.CheckError {
+		return nil, &code.MsgCode{Msg: "InsertError", Code: code.InsertError}, err
+	}
+
+	if msgCode.Code == code.OK {
+		return nil, &code.MsgCode{}, nil
+	}
+
+	if msgCode.Code == code.DBEmpty {
+		return nil, &code.MsgCode{}, nil
+	}
+
+	/*
+
+	   额外数据处理
+
+	*/
+
+	// 数据库存储
+	result := tx.Create($smn)
+
+	// 插入有问题
+	if result.Error != nil {
+		return nil, &code.MsgCode{Msg: "InsertError", Code: code.InsertError}, result.Error
+	}
+
+	// 插入成功
+	return $smn, &code.MsgCode{Msg: "OK", Code: code.OK}, nil
+}
+
+
+
+
+func $fnDrop(tx *gorm.DB, condition *model.$mt) (*code.MsgCode, error) {
+
+    result := tx.Delete(condition)
+
+    if result.Error != nil {
+        return &code.MsgCode{Msg: "DropError", Code: code.DropError}, result.Error
+    }
+
+    // 找不到用户
+    if result.RowsAffected == 0 {
+        return &code.MsgCode{Msg: "DBEmpty", Code: code.DBEmpty}, nil
+    }
+
+    return &code.MsgCode{Msg: "OK", Code: code.OK}, nil
+}
+
+
+func $fnCheck(condition *model.$mt) ([]*model.$mt, *code.MsgCode, error) {
+
+    var search$mt []*model.$mt
+
+    // 条件由外部决定
+    result := model.Db.Self.Where(condition).
+        Not(&model.$mt{}).
+        Find(&search$mt)
+
+    if result.Error != nil {
+        return nil, &code.MsgCode{Msg: "CheckError", Code: code.CheckError}, result.Error
+    }
+
+    // 找不到用户
+    if result.RowsAffected == 0 {
+        return nil, &code.MsgCode{Msg: "DBEmpty", Code: code.DBEmpty}, nil
+    }
+
+    return search$mt, &code.MsgCode{Msg: "OK", Code: code.OK}, nil
+}
+
+func $fnLimitPageCheck(condition *model.$mt, limit, page string) ([]*model.$mt, *code.MsgCode, error) {
+
+    var search$mt []*model.$mt
+
+    limitInt, _ := strconv.Atoi(limit)
+    pageInt, _ := strconv.Atoi(page)
+
+    if limitInt == 0 || pageInt == 0 {
+        return $fnCheck(condition)
+    }
+
+    // 条件由外部决定
+    result := model.Db.Self.
+        Where(condition).
+        Not(&model.$mt{}).
+        Limit(limitInt).
+        Offset(limitInt * pageInt).
+        Find(search$mt)
+
+    if result.Error != nil {
+        return nil, &code.MsgCode{Msg: "CheckError", Code: code.CheckError}, result.Error
+    }
+
+    // 找不到用户
+    if result.RowsAffected == 0 {
+        return nil, &code.MsgCode{Msg: "DBEmpty", Code: code.DBEmpty}, nil
+    }
+
+    return search$mt, &code.MsgCode{Msg: "OK", Code: code.OK}, nil
+}
+
+
+// $fnUpdate  $smn 就是要保存的数据
+func $fnUpdate(tx *gorm.DB, condition, $smn *model.$mt) (*model.$mt, *code.MsgCode, error) {
+	result := tx.Model(condition).Updates($smn)
+
+	if result.Error != nil {
+		return nil, &code.MsgCode{Msg: "UpdateError", Code: code.UpdateError}, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, &code.MsgCode{Msg: "DBEmpty", Code: code.DBEmpty}, nil
+	}
+
+	return nil, &code.MsgCode{Msg: "OK", Code: code.OK}, nil
+}
