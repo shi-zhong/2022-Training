@@ -98,6 +98,36 @@ func OrderCustomerListHandler(c *gin.Context) {
 	})
 }
 
+func OrderMerchentListHandler(c *gin.Context) {
+    ID, _, _ := utils.GetTokenInfo(c)
+
+    limit := c.Query("limit")
+    page := c.Query("page")
+
+    orders, msgCode, _ := dbop.OrderLimitPageCheck(&model.Order{MerchantID: ID}, limit, page)
+
+    if msgCode.Code == code.CheckError {
+        code.GinServerError(c)
+        return
+    }
+
+    var orderDetails []*orderDetailsModel = make([]*orderDetailsModel, len(orders))
+
+    for index, order := range orders {
+        orderUnion, err := orderUnionCheck(c, order)
+        if !err {
+            return
+        }
+        orderdetail := orderDetailSingleUnion(orderUnion)
+        orderDetails[index] = orderdetail
+    }
+
+    code.GinOKPayload(c, &gin.H{
+        "list":  orderDetails,
+        "count": len(orderDetails),
+        })
+}
+
 func OrderDetailHandler(c *gin.Context) {
 	ID, Type, _ := utils.GetTokenInfo(c)
 

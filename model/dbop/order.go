@@ -80,7 +80,7 @@ func OrderLimitPageCheck(condition *model.Order, limit, page string) ([]*model.O
         Not(&model.Order{}).
         Limit(limitInt).
         Offset(limitInt * pageInt).
-        Find(searchOrder)
+        Find(&searchOrder)
 
     if result.Error != nil {
         return nil, &code.MsgCode{Msg: "CheckError", Code: code.CheckError}, result.Error

@@ -5,7 +5,8 @@ import (
 	"HappyShopTogether/model/dbop"
 	"HappyShopTogether/utils"
 	"HappyShopTogether/utils/code"
-	"github.com/gin-gonic/gin"
+//    "fmt"
+    "github.com/gin-gonic/gin"
 )
 
 type CommodityCreateModel struct {
@@ -197,6 +198,9 @@ func CommodityDeleteHandler(c *gin.Context) {
 		ID:         pathIDModel.ID,
 		MerchantID: ID,
 	})
+
+//    fmt.Println(pathIDModel.ID)
+
 	if msgCode.Code == code.CheckError {
 		code.GinServerError(c)
 		return
@@ -230,6 +234,7 @@ func CommodityDeleteHandler(c *gin.Context) {
 		code.GinBadRequest(c)
 		return
 	}
+
 	code.GinOKPayload(c, &gin.H{
 		"status": model.CommodityStatusDeleted,
 	})

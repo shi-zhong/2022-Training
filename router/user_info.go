@@ -25,6 +25,7 @@ func setUserInfoRouter(router *gin.RouterGroup) {
 		{
             // 用户only
 			userAddress.POST("/add", handler.AddressAddHandler)
+            userAddress.GET("/list", handler.AddressCheckHander)
 			userAddress.PUT("/update", handler.AddressUpdateHandler)
 			userAddress.PUT("/default/:addressID", handler.AddressDefaultHandler)
 			userAddress.DELETE("/delete/:addressID", handler.AddressDeleteHandler)

@@ -43,9 +43,9 @@ func CustomerAddressCreate(tx *gorm.DB, address *model.CustomerAddress) (*model.
 
 	return address, &code.MsgCode{Msg: "OK", Code: code.OK}, nil
 }
-func CustomerAddressDrop(tx *gorm.DB, address *model.CustomerAddress) (*code.MsgCode, error) {
+func CustomerAddressDrop(tx *gorm.DB, condition *model.CustomerAddress) (*code.MsgCode, error) {
 
-	result := tx.Model(address).Updates(&model.CustomerAddress{
+	result := tx.Model(condition).Updates(&model.CustomerAddress{
 		Default: addressDecide(model.AddressNotExsit, model.AddressDelete),
 	})
 

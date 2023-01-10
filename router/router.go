@@ -10,6 +10,8 @@ var Router *gin.Engine
 func Init() {
 	Router = gin.Default()
 
+    Router.Use(middleware.Cors())
+
     // 不需要token
     donotNeedAuthorize := Router.Group("/api/v1")
     {

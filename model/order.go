@@ -8,6 +8,8 @@ type Order struct {
 	ShareBill   ShareBill
 	CustomerID  uint `gorm:"<-:create;not null"`
 	Customer    UserAuthor
+    MerchantID  uint `gorm:"<-:create;not null"`
+    Merchant    UserAuthor
 	AddressID   uint `gorm:"<-:create;not null"`
 	Address     CustomerAddress
 	Status      uint      `gorm:"<-;not null"`

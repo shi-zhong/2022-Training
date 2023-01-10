@@ -21,6 +21,14 @@ type AddressUpdateModel struct {
 	Phone   string `json:"phone"`
 }
 
+type AddressCheckModel struct {
+    Address string `json:"address"`
+    ID      uint   `json:"id"`
+    Name    string `json:"name"`
+    Phone   string `json:"phone"`
+    Default uint8 `json:"default"`
+}
+
 type AddressPathModel struct {
 	AddressID uint `uri:"addressID" binding:"required"`
 }
@@ -156,6 +164,37 @@ func AddressDefaultHandler(c *gin.Context) {
 
 	code.GinOKEmpty(c)
 }
+
+func AddressCheckHander(c *gin.Context) {
+	ID, _, _ := utils.GetTokenInfo(c)
+
+	addresses, msgCode, _ := dbop.CustomerAddressCheck(&model.CustomerAddress{
+		CustomerID: ID,
+	})
+
+	if msgCode.Code == code.CheckError {
+		code.GinServerError(c)
+		return
+	}
+
+    var ades = make([]*AddressCheckModel, len(addresses))
+
+	for index, address := range addresses {
+		ades[index] = &AddressCheckModel{
+			Address: address.Address,
+			ID:      address.ID,
+			Phone:   address.Phone,
+			Name:    address.ReceiverName,
+            Default: address.Default,
+		}
+	}
+
+	code.GinOKPayload(c, &gin.H{
+		"address": ades,
+        "count": len(ades),
+    })
+}
+
 func AddressDeleteHandler(c *gin.Context) {
 	ID, _, _ := utils.GetTokenInfo(c)
 

@@ -4,7 +4,8 @@ import (
     "HappyShopTogether/model"
     "HappyShopTogether/utils"
 	"HappyShopTogether/utils/code"
-	_ "fmt"
+//    "fmt"
+    _ "fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -56,6 +57,8 @@ func CustomerOnly() gin.HandlerFunc {
 func MerchantOnly() gin.HandlerFunc {
     return func(c *gin.Context) {
         _, Type, _ := utils.GetTokenInfo(c)
+//
+//        fmt.Println(ID, Type, Phone)
 
         if Type != model.UserTypeMerchant {
             code.GinUnAuthorized(c)

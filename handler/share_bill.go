@@ -289,6 +289,7 @@ func ShareBillCreateHandler(c *gin.Context) {
 		ID:          utils.OrderIDGenerate(),
 		ShareBillID: shareBill.ID,
 		CustomerID:  ID,
+		MerchantID:  commodity.MerchantID,
 		AddressID:   shareBillCreateModel.AddressID,
 		DueAt:       time.Now(),
 		CommodityAt: time.Now(),
@@ -400,7 +401,7 @@ func ShareBillJoinHandler(c *gin.Context) {
 		return
 	}
 
-	if commodity.Status != model.CommodityStatusOnShelf {
+	if commodity.Status != model.CommodityStatusOnShelf && commodity.Status != model.CommodityStatusNotEnought {
 		code.GinNotOnShelf(c)
 		return
 	}
@@ -435,6 +436,7 @@ func ShareBillJoinHandler(c *gin.Context) {
 		ID:          utils.OrderIDGenerate(),
 		ShareBillID: shareBill[0].ID,
 		CustomerID:  ID,
+		MerchantID:  commodity.MerchantID,
 		AddressID:   shareBillJoinModel.AddressID,
 		DueAt:       time.Now(),
 		CommodityAt: time.Now(),
@@ -461,9 +463,9 @@ func ShareBillJoinHandler(c *gin.Context) {
 		code.GinServerError(c)
 		return
 	} else if msgCode6.Code == code.DBEmpty {
-		tx.Rollback()
-		code.GinUnMatchedID(c)
-		return
+		//		tx.Rollback()
+		//		code.GinUnMatchedID(c)
+		//		return
 	}
 
 	// 更新拼单订单

@@ -14,6 +14,9 @@ type shopinfo struct {
 
 func SearchCommoditiesLimitPage(limit, page string, keys []string) ([]*model.CommodityInfo, []*shopinfo) {
 
+    var commodities []*model.CommodityInfo
+    var shops []*shopinfo
+
 	limitInt, _ := strconv.Atoi(limit)
 	pageInt, _ := strconv.Atoi(page)
 
@@ -22,23 +25,31 @@ func SearchCommoditiesLimitPage(limit, page string, keys []string) ([]*model.Com
 		pageInt = 1
 	}
 
-	db := model.Db.Self
-	link := ""
+    db := model.Db.Self
 
-	for _, key := range keys {
-		link += key + "|"
-	}
+    if len(keys) == 0 {
 
-	link = "'" + link[:len(link)-1] + "'"
+        commoditySql := "SELECT * FROM `commodity_infos`"
+        merchantSql := "SELECT merchant_id, shop_name,shop_intro ,shop_avatar FROM `merchant_infos`"
 
-	var commodities []*model.CommodityInfo
-	var shops []*shopinfo
+        db.Raw(commoditySql).Offset(limitInt * pageInt).Limit(limitInt).Scan(&commodities)
+        db.Raw(merchantSql).Offset(limitInt * pageInt).Limit(limitInt).Scan(&shops)
 
-	commoditySql := "SELECT * FROM `commodity_infos` WHERE name REGEXP" + link
-	merchantSql := "SELECT merchant_id, shop_name,shop_intro ,shop_avatar FROM `merchant_infos` WHERE shop_name REGEXP" + link
+    } else {
+        link := ""
 
-	db.Raw(commoditySql).Offset(limitInt * pageInt).Limit(limitInt).Scan(&commodities)
-	db.Raw(merchantSql).Offset(limitInt * pageInt).Limit(limitInt).Scan(&shops)
+        for _, key := range keys {
+            link += key + "|"
+        }
+
+        link = "'" + link[:len(link)-1] + "'"
+
+        commoditySql := "SELECT * FROM `commodity_infos` WHERE name REGEXP" + link
+        merchantSql := "SELECT merchant_id, shop_name,shop_intro ,shop_avatar FROM `merchant_infos` WHERE shop_name REGEXP" + link
+
+        db.Raw(commoditySql).Offset(limitInt * pageInt).Limit(limitInt).Scan(&commodities)
+        db.Raw(merchantSql).Offset(limitInt * pageInt).Limit(limitInt).Scan(&shops)
+    }
 
 	return commodities, shops
 }

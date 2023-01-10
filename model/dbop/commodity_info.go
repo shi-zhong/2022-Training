@@ -94,6 +94,8 @@ func CommodityInfoLimitPageCheck(commodity *model.CommodityInfo, limit, page str
 func CommodityInfoUpdate(tx *gorm.DB, condition, commodity *model.CommodityInfo) (*model.CommodityInfo, *code.MsgCode, error) {
 	result := tx.Model(condition).Updates(commodity)
 
+    tx.Debug().Model(condition).Updates(commodity)
+
 	if result.Error != nil {
 		return nil, &code.MsgCode{Msg: "UpdateError", Code: code.UpdateError}, result.Error
 	}

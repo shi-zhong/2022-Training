@@ -112,7 +112,7 @@ func RegisterCustomerHandler(c *gin.Context) {
 	user, msgCode, _ := dbop.UserCreate(tx, &model.UserAuthor{
 		Phone:    customer.Phone,
 		Password: customer.Password,
-		Type:     1,
+		Type:     model.UserTypeCustomer,
 	})
 	// 插入失败
 	if msgCode.Code != code.OK {
@@ -168,7 +168,7 @@ func RegisterMerchantHandler(c *gin.Context) {
 	user, msgCode, _ := dbop.UserCreate(tx, &model.UserAuthor{
 		Phone:    merchant.Phone,
 		Password: merchant.Password,
-		Type:     2,
+		Type:     model.UserTypeMerchant,
 	})
 
 	// 插入失败

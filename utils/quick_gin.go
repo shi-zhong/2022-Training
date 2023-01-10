@@ -2,7 +2,7 @@ package utils
 
 import (
 	"HappyShopTogether/utils/code"
-	"github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin"
 )
 
 // GetTokenInfo ID Type Phone
@@ -11,7 +11,7 @@ func GetTokenInfo(c *gin.Context) (uint, uint8, string) {
 	uintID, _ := ID.(uint)
 
 	Type, exist2 := c.Get("Type")
-	uintType, _ := Type.(uint)
+	uintType, _ := Type.(uint8)
 
 	Phone, exist3 := c.Get("Phone")
 	uintPhone, _ := Phone.(string)
@@ -21,7 +21,7 @@ func GetTokenInfo(c *gin.Context) (uint, uint8, string) {
 		c.Abort()
 		return 0, 0, ""
 	}
-	return uintID, uint8(uintType), uintPhone
+	return uintID, uintType, uintPhone
 }
 
 func QuickBind(c *gin.Context, structPointer any) bool {
